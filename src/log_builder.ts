@@ -13,6 +13,18 @@ export class LogBuilder {
   #propsToLabels: string[]
   #levelMap: { [key: number]: LokiLogLevel }
 
+  kinba_date_now: number
+
+  kinba_getNow(): number {
+    let now = Date.now();
+    if (this.kinba_date_now && (now == this.kinba_date_now)) {
+      now = ++this.kinba_date_now;
+    } else {
+      this.kinba_date_now = now;
+    }
+    return now;
+  }
+
   constructor(options?: BuilderOptions) {
     this.#propsToLabels = options?.propsToLabels || []
     this.#levelMap = Object.assign(
@@ -26,15 +38,34 @@ export class LogBuilder {
       },
       options?.levelMap,
     )
+    this.kinba_date_now = 0;
+    this.kinba_logTime = 0;
   }
 
   /**
    * Builds a timestamp string from a Pino log object.
    * @returns A string representing the timestamp in nanoseconds.
    */
+
+  kinba_logTime: number;
+
   #buildTimestamp(log: PinoLog, replaceTimestamp?: boolean): string {
     if (replaceTimestamp) {
-      return (new Date().getTime() * 1_000_000).toString()
+      if (true) {
+        return (this.kinba_getNow() * 1_000_000).toString();
+      } else {
+        return (new Date().getTime() * 1_000_000).toString();
+      }
+    }
+
+    if (!log.time) {
+      log.time = this.kinba_getNow();
+    } else {
+      if (this.kinba_logTime && this.kinba_logTime >= log.time) {
+        log.time = ++this.kinba_logTime;
+      } else {
+        this.kinba_logTime = log.time;
+      }
     }
 
     const time = log.time || Date.now()
