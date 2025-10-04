@@ -49,6 +49,7 @@
     "checks": "pnpm typecheck && pnpm lint && pnpm test"
   },
   "dependencies": {
+    "microtime": "^3.1.1",
     "pino-abstract-transport": "^2.0.0",
     "pump": "^3.0.2"
   },
@@ -57,6 +58,7 @@
     "@japa/runner": "^4.2.0",
     "@japa/spec-reporter": "^1.3.3",
     "@julr/tooling-configs": "^4.0.0",
+    "@types/microtime": "^2.1.2",
     "@types/node": "^22.15.29",
     "@types/pump": "^1.1.3",
     "bumpp": "^10.1.1",

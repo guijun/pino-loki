@@ -1,7 +1,7 @@
 import { LokiLogLevel } from './constants.ts'
 import { formatLog } from './format_mesage.ts'
 import type { LokiLog, PinoLog, LokiOptions, LogFormat, LogFormatExpectedObject } from './types.ts'
-
+import microtime from "microtime";
 const NANOSECONDS_LENGTH = 19
 
 type BuilderOptions = Pick<LokiOptions, 'propsToLabels' | 'levelMap'>
@@ -15,8 +15,8 @@ export class LogBuilder {
 
   kinba_date_now: number
 
-  kinba_getNow(): number {
-    let now = Date.now();
+  kinba_NowMicro(): number {
+    let now = microtime.now();
     if (this.kinba_date_now && (now == this.kinba_date_now)) {
       now = ++this.kinba_date_now;
     } else {
@@ -52,14 +52,14 @@ export class LogBuilder {
   #buildTimestamp(log: PinoLog, replaceTimestamp?: boolean): string {
     if (replaceTimestamp) {
       if (true) {
-        return (this.kinba_getNow() * 1_000_000).toString();
+        return (this.kinba_NowMicro() * 1_000).toString();
       } else {
         return (new Date().getTime() * 1_000_000).toString();
       }
     }
 
     if (!log.time) {
-      log.time = this.kinba_getNow();
+      log.time = this.kinba_NowMicro();
     } else {
       if (this.kinba_logTime && this.kinba_logTime >= log.time) {
         log.time = ++this.kinba_logTime;
@@ -140,9 +140,9 @@ export class LogBuilder {
 
     const formattedMessage = options.logFormat
       ? formatLog({
-          logFormat: options.logFormat,
-          log: { ...options.log, lokilevel: status } as LogFormatExpectedObject,
-        })
+        logFormat: options.logFormat,
+        log: { ...options.log, lokilevel: status } as LogFormatExpectedObject,
+      })
       : this.#stringifyLog(options.log, options.convertArrays)
 
     return {
